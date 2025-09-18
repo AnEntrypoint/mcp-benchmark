@@ -11,4 +11,8 @@ export { createDefaultTests } from './utils/default-tests.js';
 export { createMCPServerConfig } from './utils/mcp-config.js';
 
 // Re-export everything for convenience
+import { BenchmarkRunner } from './core/benchmark-runner.js';
+import { TestEnvironmentBuilder } from './core/test-environment.js';
+import { ResultsAnalyzer } from './core/results-analyzer.js';
+
 export default { BenchmarkRunner, TestEnvironmentBuilder, ResultsAnalyzer };

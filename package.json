@@ -12,7 +12,7 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "mcp-ab-benchmark": "dist/cli.js"
+    "mcp-ab-benchmark": "dist/cli/index.js"
   },
   "files": [
     "dist/",

@@ -166,7 +166,7 @@ export class BenchmarkRunner {
       try {
         const result = await this.executeTest(test, environment, useMcp, outputDir, attempt);
         return result;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error;
         console.error(`❌ Test attempt ${attempt} failed: ${error.message}`);
 
@@ -271,6 +271,11 @@ export class BenchmarkRunner {
       const args = this.parseClaudeCommand(options.command);
       const commandName = args.shift();
 
+      if (!commandName) {
+        reject(new Error('No command specified'));
+        return;
+      }
+
       const child = spawn(commandName, args, {
         cwd: options.workingDir,
         stdio: 'pipe',
@@ -280,11 +285,11 @@ export class BenchmarkRunner {
       let stdout = '';
       let stderr = '';
 
-      child.stdout.on('data', (data) => {
+      child.stdout.on('data', (data: any) => {
         stdout += data.toString();
       });
 
-      child.stderr.on('data', (data) => {
+      child.stderr.on('data', (data: any) => {
         stderr += data.toString();
       });
 
@@ -293,7 +298,7 @@ export class BenchmarkRunner {
         reject(new Error(`Command timed out after ${options.timeout}ms`));
       }, options.timeout);
 
-      child.on('close', (code) => {
+      child.on('close', (code: any) => {
         clearTimeout(timeoutHandle);
 
         if (code === 0) {
@@ -308,7 +313,7 @@ export class BenchmarkRunner {
         }
       });
 
-      child.on('error', (error) => {
+      child.on('error', (error: any) => {
         clearTimeout(timeoutHandle);
         reject(error);
       });
@@ -392,7 +397,7 @@ export class BenchmarkRunner {
           encoding: 'utf8'
         });
         console.log('  ✅ MCP server starts successfully');
-      } catch (error) {
+      } catch (error: any) {
         if (error.message.includes('timeout')) {
           console.log('  ✅ MCP server starts successfully');
         } else {
@@ -435,7 +440,7 @@ export class BenchmarkRunner {
           await fs.rm(dir, { recursive: true, force: true });
           console.log(`✅ Cleaned up ${path.basename(dir)}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn(`Warning: Could not clean up ${dir}: ${error.message}`);
       }
     }
