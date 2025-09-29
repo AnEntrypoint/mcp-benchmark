@@ -1,285 +1,120 @@
-# MCP A/B Benchmark
+# MCP Benchmark Runner
 
-A comprehensive benchmarking library for Model Context Protocol (MCP) tools and servers. This library helps you evaluate the performance impact of MCP tools compared to baseline implementations.
+A standalone npx-compatible tool for benchmarking MCP (Model Context Protocol) tools.
 
 ## Features
 
-- 🚀 **Easy Setup**: Simple API for creating and running benchmarks
-- 📊 **Comprehensive Analysis**: Detailed performance metrics and tool usage analysis
-- 🔧 **Flexible Configuration**: Support for custom tests and MCP server configurations
-- 📈 **Multiple Export Formats**: JSON, CSV, and Markdown report generation
-- 🎯 **Built-in Test Suites**: Pre-configured tests for common MCP evaluation scenarios
-- 🔄 **Parallel Execution**: Run multiple tests simultaneously for faster results
-- 🛠️ **CLI Tool**: Command-line interface for easy benchmark execution
+- **Universal MCP Support**: Works with any MCP tool loadable via npx
+- **Parallel Testing**: Runs baseline vs MCP tests for accurate comparison
+- **Custom Projects**: Test with your own codebase or use default test project
+- **Detailed Reports**: Generates performance metrics and actionable suggestions
+- **Clean Output**: Streamlined, readable console output
 
 ## Installation
 
 ```bash
-npm install mcp-ab-benchmark
+npm install -g mcp-benchmark
 ```
 
-## Quick Start
+## Usage
 
-### Using the CLI
+### Basic Usage
 
 ```bash
-# Run default benchmark suite
-npx mcp-ab-benchmark run
-
-# Run with custom MCP server
-npx mcp-ab-benchmark run --mcp-server glootie --output ./results
-
-# Create a custom configuration file
-npx mcp-ab-benchmark create-config --output my-benchmark.json
-
-# Run with custom configuration
-npx mcp-ab-benchmark run --config my-benchmark.json
+mcp-benchmark
 ```
 
-### Using the Library
-
-```typescript
-import { BenchmarkRunner, createDefaultTests, createGlootieConfig } from 'mcp-ab-benchmark';
-
-// Create benchmark runner
-const runner = new BenchmarkRunner();
-
-// Configure MCP server
-const mcpServer = createGlootieConfig({
-  serverPath: './path/to/mcp-server.js'
-});
-
-// Run benchmark suite
-const results = await runner.runBenchmarkSuite(createDefaultTests(), {
-  name: 'My MCP Benchmark',
-  description: 'Evaluating MCP tool performance',
-  version: '1.0.0',
-  mcpServer,
-  parallel: true,
-  outputDir: './benchmark-results'
-});
-
-console.log(`Average improvement: ${results.avgImprovement}%`);
-```
-
-## Configuration
-
-### Test Configuration
-
-Each test is defined with the following properties:
-
-```typescript
-interface BenchmarkConfig {
-  name: string;           // Test name
-  description: string;    // Test description
-  category: string;       // Category for grouping
-  prompt: string;         // Task prompt for Claude
-  timeout?: number;       // Timeout in milliseconds
-  maxRetries?: number;    // Number of retry attempts
-  setup?: (testDir: string) => Promise<void>;      // Custom setup
-  validate?: (result: TestResult) => boolean;      // Custom validation
-}
-```
-
-### MCP Server Configuration
-
-Configure your MCP server:
-
-```typescript
-interface MCPServerConfig {
-  name: string;           // Server name
-  command: string;        // Command to run server
-  args: string[];         // Command arguments
-  env?: Record<string, string>;  // Environment variables
-  cwd?: string;          // Working directory
-}
-```
-
-## Built-in Test Suites
-
-### Default Tests
-
-The default test suite includes:
-
-- **Component Analysis**: Analyze React components and suggest improvements
-- **UI Generation**: Create new components following existing patterns
-- **Refactoring**: Extract utilities and add error boundaries
-- **Performance Optimization**: Optimize React components for performance
-- **Code Search**: Search and analyze code patterns
-- **Type Safety**: Improve TypeScript type safety
-
-### Custom Tests
-
-Create focused tests for specific areas:
-
-```typescript
-import { createCustomTests } from 'mcp-ab-benchmark';
-
-const tests = createCustomTests({
-  focusAreas: ['search', 'refactoring'],
-  complexity: 'medium',
-  timeout: 120000
-});
-```
-
-### Stress Tests
-
-Performance stress tests for large codebases:
-
-```typescript
-import { createStressTests } from 'mcp-ab-benchmark';
-
-const stressTests = createStressTests();
-```
-
-## MCP Server Support
-
-### Built-in Configurations
-
-Popular MCP servers are pre-configured:
-
-```typescript
-import { createPopularServerConfigs } from 'mcp-ab-benchmark';
-
-const servers = createPopularServerConfigs();
-// Available: filesystem, github, postgres, puppeteer, brave-search
-```
-
-### Glootie Configuration
-
-Special support for the Glootie MCP server:
-
-```typescript
-import { createGlootieConfig } from 'mcp-ab-benchmark';
-
-const glootie = createGlootieConfig({
-  serverPath: '../mcp-repl/src/index.js',
-  workingDirectory: process.cwd()
-});
-```
-
-## Results Analysis
-
-### Benchmark Results
-
-```typescript
-interface BenchmarkResult {
-  test: BenchmarkConfig;      // Test configuration
-  baseline: TestResult;       // Non-MCP result
-  optimized: TestResult;      // MCP-enabled result
-  improvement: string;        // Performance improvement %
-}
-```
-
-### Export Options
-
-Export results in multiple formats:
-
-```typescript
-import { ResultsAnalyzer } from 'mcp-ab-benchmark';
-
-const analyzer = new ResultsAnalyzer();
-
-// Generate reports
-const summary = analyzer.generateSummaryReport(results);
-const analysis = analyzer.generateAnalysisReport(results);
-
-// Export in different formats
-const json = analyzer.exportResults(results, 'json');
-const csv = analyzer.exportResults(results, 'csv');
-const markdown = analyzer.exportResults(results, 'markdown');
-```
-
-## CLI Commands
-
-### Run Benchmarks
+### With Custom MCP Tool
 
 ```bash
-# Basic usage
-mcp-ab-benchmark run
-
-# With options
-mcp-ab-benchmark run \
-  --config benchmark-config.json \
-  --output ./results \
-  --parallel \
-  --mcp-server glootie \
-  --timeout 180000
+mcp-benchmark --mcp-tool @modelcontextprotocol/server-github
 ```
 
-### Configuration Management
+### With Arguments
 
 ```bash
-# Create configuration file
-mcp-ab-benchmark create-config --preset default --output config.json
-
-# Validate configuration
-mcp-ab-benchmark validate config.json
-
-# List available presets
-mcp-ab-benchmark list-presets
-
-# List supported MCP servers
-mcp-ab-benchmark list-servers
+mcp-benchmark -m @modelcontextprotocol/server-brave-search -a "--api-key YOUR_KEY"
 ```
 
-## Advanced Usage
+### With Custom Project
 
-### Custom Test Environment
-
-```typescript
-import { TestEnvironmentBuilder } from 'mcp-ab-benchmark';
-
-const envBuilder = new TestEnvironmentBuilder();
-
-const environment = await envBuilder.createTestEnvironment({
-  testDir: './custom-test-env',
-  mcpServer: myMcpServer,
-  files: {
-    'custom-component.tsx': customComponentCode
-  },
-  packageJson: {
-    dependencies: {
-      'custom-package': '^1.0.0'
-    }
-  },
-  setupScripts: ['npm run setup-custom']
-});
+```bash
+mcp-benchmark -p ./my-project
 ```
 
-### Custom Result Analysis
+### Advanced Options
 
-```typescript
-import { ResultsAnalyzer } from 'mcp-ab-benchmark';
-
-class CustomAnalyzer extends ResultsAnalyzer {
-  generateCustomReport(results: BenchmarkSuite): string {
-    // Your custom analysis logic
-    return 'Custom analysis report';
-  }
-}
-
-const analyzer = new CustomAnalyzer();
-const customReport = analyzer.generateCustomReport(results);
+```bash
+mcp-benchmark \
+  --mcp-tool @modelcontextprotocol/server-github \
+  --custom-project ./my-app \
+  --timeout 1800000 \
+  --output-dir results
 ```
 
-## Requirements
+## Options
 
-- Node.js 16.0.0 or higher
-- Claude CLI installed and configured
-- MCP server (optional, for MCP-enabled tests)
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-m, --mcp-tool` | MCP tool to benchmark | `@modelcontextprotocol/server-github` |
+| `-a, --mcp-args` | Additional arguments for MCP tool | `[]` |
+| `-p, --custom-project` | Path to custom project | `null` |
+| `-t, --timeout` | Test timeout in milliseconds | `300000` |
+| `-o, --output-dir` | Output directory for results | `results` |
+| `-h, --help` | Show help message | - |
+
+## How It Works
+
+1. **Setup**: Creates test environments with and without MCP tool
+2. **Testing**: Runs parallel tests comparing baseline vs MCP performance
+3. **Analysis**: Measures execution time, success rates, and tool usage
+4. **Reporting**: Generates detailed performance metrics and suggestions
+
+## Output
+
+The tool generates:
+
+- **Console Output**: Real-time test progress and results
+- **JSON Results**: Detailed performance data in `results/` directory
+- **SUGGESTIONS.md**: AI-generated improvement recommendations
+
+## Examples
+
+### Benchmark GitHub MCP Server
+
+```bash
+mcp-benchmark -m @modelcontextprotocol/server-github
+```
+
+### Benchmark Custom MCP Tool
+
+```bash
+mcp-benchmark -m @myorg/mcp-tool -a "--config ./config.json"
+```
+
+### Benchmark with Your Project
+
+```bash
+mcp-benchmark -p ./my-node-project
+```
+
+## Development
+
+```bash
+# Clone and run locally
+git clone <repository>
+cd mcp-benchmark
+npm install
+npm start
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
 ## License
 
 MIT
-
-## Contributing
-
-Contributions are welcome! Please read our contributing guidelines and submit pull requests to our repository.
-
-## Support
-
-For issues and questions:
-- GitHub Issues: [Report bugs and request features]
-- Documentation: [Full API documentation]
-- Examples: [Example implementations]
